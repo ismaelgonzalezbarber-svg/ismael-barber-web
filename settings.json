@@ -1,0 +1,94 @@
+{
+  "businessName": "Peluquería Barbería Ismael",
+  "address": "C. la Paz, 6, 21003 Huelva",
+  "phone": "601 240 364",
+  "timezone": "Europe/Madrid",
+  "hours": [
+    {
+      "day": "Lunes",
+      "enabled": true,
+      "periods": [
+        [
+          "09:00",
+          "14:00"
+        ],
+        [
+          "16:30",
+          "20:30"
+        ]
+      ]
+    },
+    {
+      "day": "Martes",
+      "enabled": true,
+      "periods": [
+        [
+          "09:00",
+          "14:00"
+        ],
+        [
+          "16:30",
+          "20:30"
+        ]
+      ]
+    },
+    {
+      "day": "Miércoles",
+      "enabled": true,
+      "periods": [
+        [
+          "09:00",
+          "14:00"
+        ],
+        [
+          "16:30",
+          "20:30"
+        ]
+      ]
+    },
+    {
+      "day": "Jueves",
+      "enabled": true,
+      "periods": [
+        [
+          "09:00",
+          "14:00"
+        ],
+        [
+          "16:30",
+          "20:30"
+        ]
+      ]
+    },
+    {
+      "day": "Viernes",
+      "enabled": true,
+      "periods": [
+        [
+          "09:00",
+          "14:00"
+        ],
+        [
+          "16:30",
+          "20:30"
+        ]
+      ]
+    },
+    {
+      "day": "Sábado",
+      "enabled": true,
+      "periods": [
+        [
+          "09:00",
+          "14:00"
+        ]
+      ]
+    },
+    {
+      "day": "Domingo",
+      "enabled": false,
+      "periods": []
+    }
+  ],
+  "slotMinutes": 30
+}

@@ -1,0 +1,119 @@
+[
+  {
+    "id": "corte-caballero",
+    "category": "Cortes y arreglos",
+    "name": "Corte caballero",
+    "description": "Corte de pelo",
+    "price": 11,
+    "duration": 30,
+    "active": true
+  },
+  {
+    "id": "corte-barba",
+    "category": "Cortes y arreglos",
+    "name": "Corte barba",
+    "description": "Arreglo de barba",
+    "price": 7,
+    "duration": 15,
+    "active": true
+  },
+  {
+    "id": "corte-cejas",
+    "category": "Cortes y arreglos",
+    "name": "Corte cejas",
+    "description": "Arreglo de cejas",
+    "price": 5,
+    "duration": 10,
+    "active": true
+  },
+  {
+    "id": "corte-barba-combo",
+    "category": "Cortes y arreglos",
+    "name": "Corte + barba",
+    "description": "Servicio combinado",
+    "price": 16,
+    "duration": 45,
+    "active": true
+  },
+  {
+    "id": "corte-cejas-combo",
+    "category": "Cortes y arreglos",
+    "name": "Corte + cejas",
+    "description": "Servicio combinado",
+    "price": 13,
+    "duration": 40,
+    "active": true
+  },
+  {
+    "id": "corte-completo",
+    "category": "Cortes y arreglos",
+    "name": "Corte + barba + cejas",
+    "description": "Servicio combinado",
+    "price": 18,
+    "duration": 50,
+    "active": true
+  },
+  {
+    "id": "decolorar",
+    "category": "Coloración y tintes",
+    "name": "Decolorar",
+    "description": "",
+    "price": 10,
+    "duration": 30,
+    "active": true
+  },
+  {
+    "id": "mechas",
+    "category": "Coloración y tintes",
+    "name": "Mechas",
+    "description": "",
+    "price": 25,
+    "duration": 60,
+    "active": true
+  },
+  {
+    "id": "mechas-color",
+    "category": "Coloración y tintes",
+    "name": "Mechas color",
+    "description": "",
+    "price": 28,
+    "duration": 60,
+    "active": true
+  },
+  {
+    "id": "tinte-cabello",
+    "category": "Coloración y tintes",
+    "name": "Tinte cabello",
+    "description": "",
+    "price": 20,
+    "duration": 45,
+    "active": true
+  },
+  {
+    "id": "tinte-barba",
+    "category": "Coloración y tintes",
+    "name": "Tinte barba",
+    "description": "",
+    "price": 15,
+    "duration": 30,
+    "active": true
+  },
+  {
+    "id": "tinte-cabello-barba",
+    "category": "Coloración y tintes",
+    "name": "Tinte cabello + barba",
+    "description": "",
+    "price": 32,
+    "duration": 60,
+    "active": true
+  },
+  {
+    "id": "color-fantasia",
+    "category": "Coloración y tintes",
+    "name": "Color fantasía",
+    "description": "",
+    "price": 35,
+    "duration": 75,
+    "active": true
+  }
+]
