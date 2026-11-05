@@ -7,13 +7,14 @@
 <meta name="description" content="Peluquería Barbería Ismael en Huelva. Consulta servicios, precios y reserva tu cita.">
 <title>Peluquería Barbería Ismael | Huelva</title>
 <style>
-:root{--bg:#0d0d0d;--panel:#171717;--panel2:#202020;--yellow:#f5d21a;--text:#f7f7f7;--muted:#b7b7b7;--line:#343434}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,Helvetica,sans-serif;line-height:1.55}
+:root{--bg:#0d0d0d;--panel:rgba(18,18,18,.90);--panel2:rgba(32,32,32,.90);--yellow:#f5d21a;--text:#f7f7f7;--muted:#b7b7b7;--line:#343434}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,Helvetica,sans-serif;line-height:1.55;position:relative;isolation:isolate}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.78)),url("https://i.imgur.com/fi6NdiF.jpg") center center/cover no-repeat;background-color:#0d0d0d}
 a{color:inherit}.wrap{width:min(1120px,92%);margin:auto}
-header{position:sticky;top:0;z-index:10;background:rgba(13,13,13,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+header{position:sticky;top:0;z-index:10;background:rgba(8,8,8,.82);backdrop-filter:blur(12px);border-bottom:1px solid rgba(245,210,26,.35)}
 .topbar{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:18px}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:900;letter-spacing:.04em}
-.brand-mark{width:43px;height:43px;border:2px solid var(--yellow);color:var(--yellow);display:grid;place-items:center;font-weight:1000;font-size:17px;transform:skew(-5deg)}
+.brand-logo{display:block;width:58px;height:58px;object-fit:contain;border-radius:50%;flex:0 0 auto;border:1px solid rgba(245,210,26,.65)}
 .brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.22em;font-weight:700}
 nav{display:flex;gap:8px;flex-wrap:wrap}
 .tab{border:1px solid transparent;background:transparent;color:#eee;padding:11px 15px;border-radius:8px;font-weight:800;cursor:pointer;font-size:14px}
@@ -41,7 +42,7 @@ h2{font-size:clamp(28px,4vw,42px);margin:5px 0;letter-spacing:-.03em}h3{margin:0
 .info-list{display:grid;gap:13px;margin:18px 0}.info-line{display:flex;gap:12px}.info-line b{color:var(--yellow);min-width:25px}
 footer{border-top:1px solid var(--line);padding:25px 0;color:var(--muted);font-size:13px}
 .footer-inner{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-@media(max-width:760px){.topbar{padding:12px 0;align-items:flex-start;flex-direction:column}.topbar nav{width:100%;display:grid;grid-template-columns:repeat(4,1fr)}.tab{padding:10px 4px;font-size:12px}.hero{grid-template-columns:1fr;padding:48px 0 35px;gap:24px}.hero-art{min-height:230px}.hero-logo{max-height:300px}.cards{grid-template-columns:1fr}.booking-grid{grid-template-columns:1fr}.section-head{align-items:flex-start;flex-direction:column}.brand{font-size:14px}}
+@media(max-width:760px){.topbar{padding:12px 0;align-items:flex-start;flex-direction:column}.topbar nav{width:100%;display:grid;grid-template-columns:repeat(4,1fr)}.tab{padding:10px 4px;font-size:12px}.hero{grid-template-columns:1fr;padding:48px 0 35px;gap:24px}.hero-art{min-height:230px}.hero-logo{max-height:300px}.cards{grid-template-columns:1fr}.booking-grid{grid-template-columns:1fr}.section-head{align-items:flex-start;flex-direction:column}.brand{font-size:14px}.brand-logo{width:48px;height:48px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -49,7 +50,7 @@ footer{border-top:1px solid var(--line);padding:25px 0;color:var(--muted);font-s
 <header>
   <div class="wrap topbar">
     <a class="brand" href="#" data-tab="inicio" aria-label="Ir al inicio">
-      <span class="brand-mark">BI</span><span>PELUQUERÍA BARBERÍA ISMAEL<small>HUELVA · ESTILO Y PRECISIÓN</small></span>
+      <img class="brand-logo" src="logo-ismael.png" alt="Logotipo de Peluquería Barbería Ismael"><span>PELUQUERÍA BARBERÍA ISMAEL<small>HUELVA · ESTILO Y PRECISIÓN</small></span>
     </a>
     <nav role="tablist" aria-label="Navegación principal">
       <button class="tab" role="tab" id="tab-inicio" aria-controls="inicio" aria-selected="true" data-tab="inicio">Inicio</button>
