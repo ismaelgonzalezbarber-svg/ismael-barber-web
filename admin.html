@@ -57,7 +57,10 @@ const SUPABASE_URL = "https://qhyaketkmpxdqgyxcttq.supabase.co";
 const SUPABASE_KEY = "sb_publishable_3nt2bm8wB5UFr_SJTl03iA_dHy3f0FP";
 const ADMIN_UID = "fd3717b3-a468-4c9a-83df-e5c4f9ce4ce2";
 const BUCKET = "galeria";
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Variable renombrada para evitar conflictos con otra declaracion global "supabase".
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const loginCard = document.getElementById('login-card');
 const adminCard = document.getElementById('admin-card');
 const loginStatus = document.getElementById('login-status');
@@ -66,7 +69,7 @@ function message(element, value) { element.textContent = value; }
 
 async function enterAdmin(user) {
   if (!user || user.id !== ADMIN_UID) {
-    await supabase.auth.signOut();
+    await supabaseClient.auth.signOut();
     message(loginStatus, 'Esta cuenta no tiene permiso de administrador.');
     return;
   }
@@ -82,23 +85,31 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
   message(loginStatus, 'Comprobando acceso...');
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
-  const { data, error } = await supabase.auth.signInWithPassword({email, password});
-  button.disabled = false;
-  if (error) { message(loginStatus, 'No se ha podido iniciar sesión. Comprueba el correo y la contraseña.'); return; }
-  await enterAdmin(data.user);
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({email, password});
+    if (error) {
+      message(loginStatus, 'No se ha podido iniciar sesión: ' + error.message);
+      return;
+    }
+    await enterAdmin(data.user);
+  } catch (error) {
+    message(loginStatus, 'Error de conexión: ' + (error.message || 'No se pudo contactar con Supabase.'));
+  } finally {
+    button.disabled = false;
+  }
 });
 
 async function loadAdminPhotos() {
   const container = document.getElementById('admin-photos');
   container.innerHTML = '';
-  const { data, error } = await supabase.storage.from(BUCKET).list('', {
+  const { data, error } = await supabaseClient.storage.from(BUCKET).list('', {
     limit: 100, sortBy: {column: 'created_at', order: 'desc'}
   });
-  if (error) { message(adminStatus, 'No se han podido cargar las fotografías.'); return; }
+  if (error) { message(adminStatus, 'No se han podido cargar las fotografías: ' + error.message); return; }
   const photos = (data || []).filter(file => file.name && file.id);
   if (!photos.length) { container.textContent = 'Todavía no hay fotografías en la galería.'; return; }
   photos.forEach(file => {
-    const { data: publicData } = supabase.storage.from(BUCKET).getPublicUrl(file.name);
+    const { data: publicData } = supabaseClient.storage.from(BUCKET).getPublicUrl(file.name);
     const item = document.createElement('div');
     item.className = 'photo';
     const img = document.createElement('img');
@@ -127,31 +138,36 @@ document.getElementById('upload-button').addEventListener('click', async () => {
   const button = document.getElementById('upload-button');
   button.disabled = true;
   let uploaded = 0;
-  for (const file of files) {
-    const safeName = file.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'-');
-    const uniquePath = `${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safeName}`;
-    const { error } = await supabase.storage.from(BUCKET).upload(uniquePath, file, {
-      cacheControl: '3600', upsert: false, contentType: file.type
-    });
-    if (error) message(adminStatus, `Error al subir ${file.name}: ${error.message}`);
-    else uploaded++;
+  try {
+    for (const file of files) {
+      const safeName = file.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'-');
+      const uniquePath = `${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safeName}`;
+      const { error } = await supabaseClient.storage.from(BUCKET).upload(uniquePath, file, {
+        cacheControl: '3600', upsert: false, contentType: file.type
+      });
+      if (error) message(adminStatus, `Error al subir ${file.name}: ${error.message}`);
+      else uploaded++;
+    }
+  } catch (error) {
+    message(adminStatus, 'Error durante la subida: ' + (error.message || 'Error desconocido.'));
+  } finally {
+    button.disabled = false;
+    input.value = '';
   }
-  button.disabled = false;
-  input.value = '';
   if (uploaded) message(adminStatus, `${uploaded} fotografía(s) subida(s) correctamente.`);
   await loadAdminPhotos();
 });
 
 async function deletePhoto(path) {
   if (!confirm('¿Seguro que quieres eliminar esta fotografía de la galería?')) return;
-  const { error } = await supabase.storage.from(BUCKET).remove([path]);
-  if (error) { message(adminStatus, 'No se pudo eliminar la fotografía.'); return; }
+  const { error } = await supabaseClient.storage.from(BUCKET).remove([path]);
+  if (error) { message(adminStatus, 'No se pudo eliminar la fotografía: ' + error.message); return; }
   message(adminStatus, 'Fotografía eliminada.');
   await loadAdminPhotos();
 }
 
 document.getElementById('logout-button').addEventListener('click', async () => {
-  await supabase.auth.signOut();
+  await supabaseClient.auth.signOut();
   adminCard.classList.add('hidden');
   loginCard.classList.remove('hidden');
   document.getElementById('login-form').reset();
@@ -159,10 +175,11 @@ document.getElementById('logout-button').addEventListener('click', async () => {
 });
 
 (async () => {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session }, error } = await supabaseClient.auth.getSession();
+  if (error) { message(loginStatus, 'No se pudo comprobar la sesión: ' + error.message); return; }
   if (session) {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (!error && user) await enterAdmin(user);
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (!userError && user) await enterAdmin(user);
   }
 })();
 </script>
