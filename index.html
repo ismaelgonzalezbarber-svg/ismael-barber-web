@@ -120,7 +120,6 @@ footer{border-top:1px solid var(--line);padding:25px 0;color:var(--muted);font-s
     </div>
   </section>
 
-
   <section class="panel" id="galeria" role="tabpanel" aria-labelledby="tab-galeria">
     <div class="section" style="padding-top:52px">
       <div class="eyebrow">Nuestros trabajos</div>
@@ -198,7 +197,7 @@ async function loadGallery(){
         'Authorization': `Bearer ${SUPABASE_KEY}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({prefix: '', limit: 100, offset: 0, sortBy: {column: 'created_at', order: 'desc'}})
+      body: JSON.stringify({prefix: '', limit: 100, offset: 0, sortBy: {column: 'name', order: 'asc'}})
     });
     if(!response.ok) throw new Error('No se pudo consultar el almacenamiento.');
     const files = await response.json();
