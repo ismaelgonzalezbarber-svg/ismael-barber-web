@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101010">
+<title>Administración | Peluquería Barbería Ismael</title>
+<style>
+:root{--bg:#0d0d0d;--panel:#181818;--yellow:#f5d21a;--text:#f7f7f7;--muted:#b7b7b7;--line:#343434}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.5}
+main{width:min(760px,92%);margin:42px auto}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;margin:18px 0}
+h1,h2{margin-top:0}h1 span{color:var(--yellow)}label{display:block;margin:14px 0 6px;color:var(--muted)}
+input{width:100%;padding:13px;border-radius:8px;border:1px solid #555;background:#090909;color:white}
+button,.button{display:inline-block;padding:12px 17px;border:1px solid var(--yellow);border-radius:8px;background:var(--yellow);color:#111;font-weight:800;cursor:pointer;text-decoration:none;margin-top:14px}
+button.secondary{background:transparent;color:var(--yellow)}button:disabled{opacity:.5;cursor:not-allowed}
+.note,.status{color:var(--muted);font-size:14px}.status{margin-top:12px;min-height:22px}.hidden{display:none!important}
+.photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.photo{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#090909}
+.photo img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+.photo button{margin:8px;width:calc(100% - 16px);padding:8px;background:transparent;color:var(--yellow)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+@media(max-width:560px){.photos{grid-template-columns:repeat(2,minmax(0,1fr))}main{margin:22px auto}.card{padding:18px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div><p class="note">PELUQUERÍA BARBERÍA ISMAEL</p><h1>Panel de <span>administración</span></h1></div>
+    <a class="button" href="index.html">Volver a la web</a>
+  </div>
+  <section class="card" id="login-card">
+    <h2>Acceso privado</h2>
+    <p class="note">Entra con el correo y la contraseña del administrador que creaste en Supabase.</p>
+    <form id="login-form">
+      <label for="email">Correo electrónico</label>
+      <input id="email" type="email" autocomplete="username" required>
+      <label for="password">Contraseña</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <button id="login-button" type="submit">Entrar</button>
+    </form>
+    <p class="status" id="login-status" role="status"></p>
+  </section>
+  <section class="card hidden" id="admin-card">
+    <div class="top"><h2>Gestionar galería</h2><button class="secondary" id="logout-button" type="button">Cerrar sesión</button></div>
+    <p class="note">Selecciona fotografías JPG, PNG o WEBP. Máximo 5 MB por imagen.</p>
+    <label for="photo-files">Subir fotografías</label>
+    <input id="photo-files" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+    <button id="upload-button" type="button">Subir fotografías seleccionadas</button>
+    <p class="status" id="admin-status" role="status"></p>
+    <h2 style="margin-top:28px">Fotografías publicadas</h2>
+    <div class="photos" id="admin-photos"></div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://qhyaketkmpxdqgyxcttq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_3nt2bm8wB5UFr_SJTl03iA_dHy3f0FP";
+const ADMIN_UID = "fd3717b3-a468-4c9a-83df-e5c4f9ce4ce2";
+const BUCKET = "galeria";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const loginCard = document.getElementById('login-card');
+const adminCard = document.getElementById('admin-card');
+const loginStatus = document.getElementById('login-status');
+const adminStatus = document.getElementById('admin-status');
+function message(element, value) { element.textContent = value; }
+
+async function enterAdmin(user) {
+  if (!user || user.id !== ADMIN_UID) {
+    await supabase.auth.signOut();
+    message(loginStatus, 'Esta cuenta no tiene permiso de administrador.');
+    return;
+  }
+  loginCard.classList.add('hidden');
+  adminCard.classList.remove('hidden');
+  await loadAdminPhotos();
+}
+
+document.getElementById('login-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = document.getElementById('login-button');
+  button.disabled = true;
+  message(loginStatus, 'Comprobando acceso...');
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const { data, error } = await supabase.auth.signInWithPassword({email, password});
+  button.disabled = false;
+  if (error) { message(loginStatus, 'No se ha podido iniciar sesión. Comprueba el correo y la contraseña.'); return; }
+  await enterAdmin(data.user);
+});
+
+async function loadAdminPhotos() {
+  const container = document.getElementById('admin-photos');
+  container.innerHTML = '';
+  const { data, error } = await supabase.storage.from(BUCKET).list('', {
+    limit: 100, sortBy: {column: 'created_at', order: 'desc'}
+  });
+  if (error) { message(adminStatus, 'No se han podido cargar las fotografías.'); return; }
+  const photos = (data || []).filter(file => file.name && file.id);
+  if (!photos.length) { container.textContent = 'Todavía no hay fotografías en la galería.'; return; }
+  photos.forEach(file => {
+    const { data: publicData } = supabase.storage.from(BUCKET).getPublicUrl(file.name);
+    const item = document.createElement('div');
+    item.className = 'photo';
+    const img = document.createElement('img');
+    img.src = publicData.publicUrl;
+    img.alt = 'Fotografía de la galería';
+    img.loading = 'lazy';
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = 'Eliminar';
+    remove.addEventListener('click', () => deletePhoto(file.name));
+    item.append(img, remove);
+    container.appendChild(item);
+  });
+}
+
+document.getElementById('upload-button').addEventListener('click', async () => {
+  const input = document.getElementById('photo-files');
+  const files = Array.from(input.files || []);
+  if (!files.length) { message(adminStatus, 'Primero selecciona una o varias fotografías.'); return; }
+  if (files.some(file => !['image/jpeg','image/png','image/webp'].includes(file.type))) {
+    message(adminStatus, 'Solo se permiten imágenes JPG, PNG o WEBP.'); return;
+  }
+  if (files.some(file => file.size > 5 * 1024 * 1024)) {
+    message(adminStatus, 'Hay una imagen que supera los 5 MB. Reduce su tamaño e inténtalo de nuevo.'); return;
+  }
+  const button = document.getElementById('upload-button');
+  button.disabled = true;
+  let uploaded = 0;
+  for (const file of files) {
+    const safeName = file.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'-');
+    const uniquePath = `${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safeName}`;
+    const { error } = await supabase.storage.from(BUCKET).upload(uniquePath, file, {
+      cacheControl: '3600', upsert: false, contentType: file.type
+    });
+    if (error) message(adminStatus, `Error al subir ${file.name}: ${error.message}`);
+    else uploaded++;
+  }
+  button.disabled = false;
+  input.value = '';
+  if (uploaded) message(adminStatus, `${uploaded} fotografía(s) subida(s) correctamente.`);
+  await loadAdminPhotos();
+});
+
+async function deletePhoto(path) {
+  if (!confirm('¿Seguro que quieres eliminar esta fotografía de la galería?')) return;
+  const { error } = await supabase.storage.from(BUCKET).remove([path]);
+  if (error) { message(adminStatus, 'No se pudo eliminar la fotografía.'); return; }
+  message(adminStatus, 'Fotografía eliminada.');
+  await loadAdminPhotos();
+}
+
+document.getElementById('logout-button').addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  adminCard.classList.add('hidden');
+  loginCard.classList.remove('hidden');
+  document.getElementById('login-form').reset();
+  message(loginStatus, 'Sesión cerrada.');
+});
+
+(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (!error && user) await enterAdmin(user);
+  }
+})();
+</script>
+</body>
+</html>
