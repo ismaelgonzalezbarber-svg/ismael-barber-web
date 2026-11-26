@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - ".github/workflows/android-apk.yml"
       - "mobile/**"
       - "index.html"
       - "admin.html"
@@ -26,8 +27,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: mobile/package-lock.json
 
       - name: Configurar Java
         uses: actions/setup-java@v4
