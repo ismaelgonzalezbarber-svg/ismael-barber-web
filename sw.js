@@ -31,7 +31,7 @@ self.addEventListener("fetch", (event) => {
     }).catch(() => caches.match(BASE_PATH + "index.html")));
     return;
   }
-  if (url.pathname === BASE_PATH + "logo-ismael.png") {
+  if (url.pathname === BASE_PATH + "logo-ismael.png" || url.pathname.startsWith(BASE_PATH + "icons/")) {
     event.respondWith(caches.match(request).then((cached) => cached || fetch(request)));
   }
 });
