@@ -46,6 +46,11 @@ jobs:
       - name: Sincronizar Capacitor
         run: npx cap sync android
 
+      - name: Crear iconos y pantalla de bienvenida
+        run: |
+          python -m pip install --quiet pillow
+          python scripts/create-android-icons.py
+
       - name: Compilar APK de prueba
         working-directory: mobile/android
         run: |
