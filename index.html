@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101010">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="application-name" content="Peluquería Barbería Ismael">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Barbería Ismael">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png">
 <meta name="description" content="Peluquería Barbería Ismael en Huelva. Consulta servicios, precios y reserva tu cita.">
 <title>Peluquería Barbería Ismael | Huelva</title>
 <style>
@@ -321,5 +327,6 @@ loadCustomBackground();
 const initial=location.hash.replace('#','');
 if(['inicio','servicios','galeria','reservas','contacto'].includes(initial))showTab(initial);
 </script>
+<script src="./pwa-register.js" defer></script>
 </body>
 </html>
