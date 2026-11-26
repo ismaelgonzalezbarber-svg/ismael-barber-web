@@ -9,13 +9,15 @@
   const isStandalone = () =>
     window.matchMedia("(display-mode: standalone)").matches ||
     window.navigator.standalone === true;
+  if (isStandalone()) return;
 
-  if (isStandalone) return;
-
-  let installPrompt = null;
   const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent) ||
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isMobile = /android|iphone|ipad|ipod/i.test(window.navigator.userAgent) ||
+    navigator.maxTouchPoints > 0;
+  if (!isMobile) return;
 
+  let installPrompt = null;
   const button = document.createElement("button");
   button.type = "button";
   button.textContent = "Instalar app";
@@ -38,22 +40,19 @@
     "background:#111", "color:#fff", "font:14px/1.5 Arial,sans-serif",
     "box-shadow:0 8px 28px rgba(0,0,0,.5)"
   ].join(";");
-  note.innerHTML = '<strong style="color:#f5d21a">Instalar Peluquería Barbería Ismael</strong>' +
-    '<p style="margin:8px 0">En Safari, toca <strong>Compartir</strong> y después <strong>Añadir a pantalla de inicio</strong>.</p>' +
-    '<button type="button" style="padding:8px 12px;border:0;border-radius:7px;background:#f5d21a;color:#111;font-weight:700">Entendido</button>';
-  note.querySelector("button").addEventListener("click", () => { note.hidden = true; });
+  const showNote = (html) => {
+    note.innerHTML = html + '<button type="button" style="padding:8px 12px;border:0;border-radius:7px;background:#f5d21a;color:#111;font-weight:700">Entendido</button>';
+    note.querySelector("button").addEventListener("click", () => { note.hidden = true; });
+    note.hidden = false;
+  };
 
   button.addEventListener("click", async () => {
     if (isIOS) {
-      note.hidden = !note.hidden;
+      showNote('<strong style="color:#f5d21a">Instalar Peluquería Barbería Ismael</strong><p style="margin:8px 0">En Safari, toca <strong>Compartir</strong> y después <strong>Añadir a pantalla de inicio</strong>.</p>');
       return;
     }
     if (!installPrompt) {
-      note.innerHTML = '<strong style="color:#f5d21a">Instalación disponible desde el navegador</strong>' +
-        '<p style="margin:8px 0">Abre el menú del navegador y elige «Instalar aplicación» o «Añadir a pantalla de inicio».</p>' +
-        '<button type="button" style="padding:8px 12px;border:0;border-radius:7px;background:#f5d21a;color:#111;font-weight:700">Entendido</button>';
-      note.querySelector("button").addEventListener("click", () => { note.hidden = true; });
-      note.hidden = false;
+      showNote('<strong style="color:#f5d21a">Instalar la aplicación</strong><p style="margin:8px 0">Abre el menú del navegador y elige «Instalar aplicación» o «Añadir a pantalla de inicio».</p>');
       return;
     }
     installPrompt.prompt();
@@ -65,9 +64,13 @@
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     installPrompt = event;
-    document.body.append(button, note);
   });
 
-  if (isIOS) document.addEventListener("DOMContentLoaded", () => document.body.append(button, note));
+  const addInstallControl = () => document.body.append(button, note);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", addInstallControl, { once: true });
+  } else {
+    addInstallControl();
+  }
   window.addEventListener("appinstalled", () => button.remove());
 })();
